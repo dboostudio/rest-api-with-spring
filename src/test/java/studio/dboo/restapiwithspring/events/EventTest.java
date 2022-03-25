@@ -45,13 +45,4 @@ class EventTest {
         assertEquals(event.getName(), dboo);
     }
 
-
-
-
-
-
-
-
-
-
 }
