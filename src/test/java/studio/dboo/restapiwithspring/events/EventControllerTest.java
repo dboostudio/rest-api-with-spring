@@ -1,6 +1,7 @@
 package studio.dboo.restapiwithspring.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,6 @@ public class EventControllerTest {
 
 
         Event event = Event.builder()
-                .id(10L)
                 .name("dboo")
                 .description("dboo desc")
                 .beginEnrollmentDateTime(LocalDateTime.of(2022, 03, 22, 9, 40))
@@ -48,6 +48,9 @@ public class EventControllerTest {
                 .maxPrice(200)
                 .build();
 
+        // id, free, offfline은 미리 정해지거나 계산되어져서 정해져야 한다.
+
+
         when(eventRepository.save(event)).thenReturn(event);
 
         mockMvc.perform(post("/api/events/")
@@ -56,7 +59,8 @@ public class EventControllerTest {
                         .content(objectMapper.writeValueAsString(event)))
                 .andDo(print())
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("id").value(Matchers.not(100)))
+                .andExpect(jsonPath("free").value(Matchers.not(true)))
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE));
     }

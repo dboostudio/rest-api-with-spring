@@ -1,6 +1,7 @@
 package studio.dboo.restapiwithspring.events;
 
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +22,11 @@ public class EventController {
 
     private final EventRepository eventRepository;
 
-    @PostMapping
-    public ResponseEntity createEvent(@RequestBody Event event){
+    private final ModelMapper modelMapper;
 
+    @PostMapping
+    public ResponseEntity createEvent(@RequestBody EventDto eventDto){
+        Event event = modelMapper.map(eventDto, Event.class);
         // location URL 만들기
         Event newEvent = eventRepository.save(event);
         URI uri = linkTo(methodOn(EventController.class).createEvent(null)).slash(newEvent.getId()).toUri();
